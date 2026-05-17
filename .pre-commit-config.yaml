@@ -1,0 +1,24 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        types: [python]
+        require_serial: false
+
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check
+        language: system
+        types: [python]
+        require_serial: false
+
+      - id: anatomist-lint
+        name: anatomist anti-pattern lint
+        entry: python scripts/anatomist-lint.py .
+        language: system
+        pass_filenames: false
+        always_run: true
+        # Exit 1 si hay critical o major findings

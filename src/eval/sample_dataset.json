@@ -1,0 +1,27 @@
+[
+  {
+    "task": "Generate a Python function signature for: 'a function that takes a list of integers and returns the median'",
+    "expected_format": "python_function",
+    "difficulty": "easy"
+  },
+  {
+    "task": "Generate a Python function signature for: 'a function that downloads a URL with retry and exponential backoff, returns response body or raises'",
+    "expected_format": "python_function",
+    "difficulty": "medium"
+  },
+  {
+    "task": "Generate a Python function signature for: 'parse CSV from string, returns iterator of dicts with type coercion based on first-row hints'",
+    "expected_format": "python_function",
+    "difficulty": "hard"
+  },
+  {
+    "task": "Generate a Python function signature for: 'empty input — produce nothing'",
+    "expected_format": "python_function",
+    "difficulty": "edge"
+  },
+  {
+    "task": "Generate a Python function signature for: 'async function that streams chunks from an iterator and yields transformed values'",
+    "expected_format": "python_function",
+    "difficulty": "medium"
+  }
+]

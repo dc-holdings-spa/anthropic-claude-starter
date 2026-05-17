@@ -1,0 +1,57 @@
+name: eval-pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'src/prompts/**'
+      - 'src/eval/**'
+      - 'examples/demo_chatbot.py'
+  workflow_dispatch:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secret available
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY secret not configured — skipping eval"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+        id: secret_check
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install -e ".[dev]"
+
+      - name: Run eval pipeline on demo chatbot
+        id: eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          APP_BULK_MODEL: claude-haiku-4-5
+          APP_DEFAULT_MODEL: claude-sonnet-4-5
+        run: |
+          python examples/demo_chatbot.py --eval | tee eval_output.txt
+
+      - name: Check eval threshold
+        run: |
+          # Extraer avg score y validar >=4.0
+          AVG=$(grep -oE "Avg score: [0-9.]+" eval_output.txt | grep -oE "[0-9.]+" | head -1)
+          echo "Average score: $AVG"
+          python -c "import sys; sys.exit(0 if float('$AVG') >= 4.0 else 1)"
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: eval_output.txt
